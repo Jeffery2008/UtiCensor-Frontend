@@ -74,18 +74,6 @@ export default function Dashboard() {
 
   const [deviceList, setDeviceList] = useState([]);
 
-  // Load devices on component mount
-  useEffect(() => {
-    loadDevices();
-  }, [loadDevices]);
-
-  // Load dashboard data when device or date range changes
-  useEffect(() => {
-    if (selectedDevice) {
-      loadDashboardData();
-    }
-  }, [selectedDevice, selectedDateRange, loadDashboardData]);
-
   const loadDevices = useCallback(async () => {
     try {
       const response = await deviceAPI.getAll({ is_active: 1 });
@@ -152,6 +140,18 @@ export default function Dashboard() {
       setLoading('recentFlows', false);
     }
   }, [selectedDevice, selectedDateRange, setLoading, setStats, setTopApplications, setTopProtocols, setTopHosts, setRecentFlows, setHourlyStats]);
+
+  // Load devices on component mount
+  useEffect(() => {
+    loadDevices();
+  }, [loadDevices]);
+
+  // Load dashboard data when device or date range changes
+  useEffect(() => {
+    if (selectedDevice) {
+      loadDashboardData();
+    }
+  }, [selectedDevice, selectedDateRange, loadDashboardData]);
 
   // Calculate summary statistics
   const summaryStats = stats ? stats.reduce((acc, day) => ({
