@@ -8,6 +8,7 @@ export const useAuthStore = create(
       user: null,
       token: null,
       isAuthenticated: false,
+      hasHydrated: false,
       
       login: (user, token) => {
         localStorage.setItem('auth_token', token);
@@ -21,6 +22,8 @@ export const useAuthStore = create(
         set({ user: null, token: null, isAuthenticated: false });
       },
       
+      setHasHydrated: (state) => set({ hasHydrated: state }),
+
       updateUser: (userData) => {
         const updatedUser = { ...get().user, ...userData };
         localStorage.setItem('user', JSON.stringify(updatedUser));
@@ -34,12 +37,15 @@ export const useAuthStore = create(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        state.setHasHydrated(true);
+      },
     }
   )
 );
 
 // App store for general application state
-export const useAppStore = create((set, get) => ({
+export const useAppStore = create((set) => ({
   // UI state
   sidebarOpen: true,
   darkMode: false,
@@ -91,7 +97,7 @@ export const useAppStore = create((set, get) => ({
 }));
 
 // Dashboard store for dashboard-specific state
-export const useDashboardStore = create((set, get) => ({
+export const useDashboardStore = create((set) => ({
   // Dashboard data
   stats: null,
   hourlyStats: [],
