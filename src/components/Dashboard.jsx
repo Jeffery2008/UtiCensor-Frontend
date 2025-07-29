@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   Activity, 
   Monitor, 
@@ -19,6 +19,7 @@ import { deviceAPI, flowAPI } from '@/lib/api';
 import { useAppStore, useDashboardStore } from '@/lib/store';
 import { formatBytes, formatNumber, formatRelativeTime, getApplicationIcon, getProtocolColor } from '@/lib/utils';
 
+// eslint-disable-next-line no-unused-vars
 const StatCard = ({ title, value, change, icon: Icon, trend = 'up' }) => (
   <Card>
     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -54,15 +55,14 @@ const TopListCard = ({ title, data, renderItem, emptyMessage = "No data availabl
 );
 
 export default function Dashboard() {
-  const { devices, selectedDevice, setSelectedDevice, selectedDateRange } = useAppStore();
-  const { 
-    stats, 
-    hourlyStats, 
-    topApplications, 
-    topProtocols, 
-    topHosts, 
+  const { selectedDevice, setSelectedDevice, selectedDateRange } = useAppStore();
+  const {
+    stats,
+    hourlyStats,
+    topApplications,
+    topProtocols,
+    topHosts,
     recentFlows,
-    loading,
     setStats,
     setHourlyStats,
     setTopApplications,
@@ -77,16 +77,16 @@ export default function Dashboard() {
   // Load devices on component mount
   useEffect(() => {
     loadDevices();
-  }, []);
+  }, [loadDevices]);
 
   // Load dashboard data when device or date range changes
   useEffect(() => {
     if (selectedDevice) {
       loadDashboardData();
     }
-  }, [selectedDevice, selectedDateRange]);
+  }, [selectedDevice, selectedDateRange, loadDashboardData]);
 
-  const loadDevices = async () => {
+  const loadDevices = useCallback(async () => {
     try {
       const response = await deviceAPI.getAll({ is_active: 1 });
       setDeviceList(response.data.devices);
@@ -98,9 +98,9 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Failed to load devices:', error);
     }
-  };
+  }, [selectedDevice, setSelectedDevice]);
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     if (!selectedDevice) return;
 
     const startDate = selectedDateRange.start.toISOString().split('T')[0];
@@ -151,7 +151,7 @@ export default function Dashboard() {
     } finally {
       setLoading('recentFlows', false);
     }
-  };
+  }, [selectedDevice, selectedDateRange, setLoading, setStats, setTopApplications, setTopProtocols, setTopHosts, setRecentFlows, setHourlyStats]);
 
   // Calculate summary statistics
   const summaryStats = stats ? stats.reduce((acc, day) => ({

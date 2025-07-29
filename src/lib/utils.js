@@ -125,7 +125,7 @@ export async function copyToClipboard(text) {
   try {
     await navigator.clipboard.writeText(text);
     return true;
-  } catch (err) {
+  } catch {
     // Fallback for older browsers
     const textArea = document.createElement('textarea');
     textArea.value = text;
@@ -134,7 +134,7 @@ export async function copyToClipboard(text) {
     try {
       document.execCommand('copy');
       return true;
-    } catch (err) {
+    } catch {
       return false;
     } finally {
       document.body.removeChild(textArea);
