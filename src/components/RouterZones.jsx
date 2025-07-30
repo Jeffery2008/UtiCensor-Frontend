@@ -25,6 +25,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { deviceAPI, routerZoneAPI, routerMappingAPI } from '@/lib/api';
 import { useAppStore } from '@/lib/store';
 import { formatRelativeTime, formatNumber } from '@/lib/utils';
+import MappingConfigDialog from './MappingConfigDialog';
 
 export default function RouterZones() {
   const { selectedDevice, setSelectedDevice } = useAppStore();
@@ -139,6 +140,20 @@ export default function RouterZones() {
       loadZones();
     } catch (error) {
       console.error('Failed to delete router zone:', error);
+    }
+  };
+
+  // 删除映射
+  const handleDeleteMapping = async (type, key) => {
+    if (!confirm('确定要删除这个映射吗？')) {
+      return;
+    }
+    
+    try {
+      await routerMappingAPI.remove({ type, key });
+      loadMappings();
+    } catch (error) {
+      console.error('Failed to delete mapping:', error);
     }
   };
 
@@ -423,7 +438,11 @@ export default function RouterZones() {
                           <span className="mx-2">→</span>
                           <span className="font-medium">{identifier}</span>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleDeleteMapping('router_identifier_mapping', ip)}
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -592,6 +611,13 @@ export default function RouterZones() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* 映射配置对话框 */}
+      <MappingConfigDialog 
+        open={showMappingDialog} 
+        onOpenChange={setShowMappingDialog}
+        onSuccess={loadMappings}
+      />
     </div>
   );
 } 

@@ -62,7 +62,7 @@ export default function RouterMapping() {
   // 添加映射
   const handleAddMapping = async () => {
     try {
-      await routerMappingAPI.addMapping(formData);
+      await routerMappingAPI.add(formData);
       setShowAddDialog(false);
       setFormData({
         type: 'router_identifier_mapping',
@@ -82,7 +82,7 @@ export default function RouterMapping() {
     }
     
     try {
-      await routerMappingAPI.removeMapping({ type, key });
+      await routerMappingAPI.remove({ type, key });
       loadMappings();
     } catch (error) {
       console.error('Failed to delete mapping:', error);
@@ -92,7 +92,7 @@ export default function RouterMapping() {
   // 更新安全设置
   const handleUpdateSecuritySettings = async (settings) => {
     try {
-      await routerMappingAPI.updateConfig({
+      await routerMappingAPI.update({
         netify_settings: settings
       });
       loadMappings();
@@ -106,7 +106,7 @@ export default function RouterMapping() {
     if (!testIp) return;
     
     try {
-      const response = await routerMappingAPI.testMapping(testIp);
+      const response = await routerMappingAPI.test({ ip: testIp });
       setTestResult(response.data.test_result);
     } catch (error) {
       console.error('Failed to test mapping:', error);

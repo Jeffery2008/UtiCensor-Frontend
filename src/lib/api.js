@@ -11,7 +11,7 @@ const api = axios.create({
 // 请求拦截器 - 添加认证token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -29,7 +29,8 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
       window.location.href = '/login';
     }
     return Promise.reject(error);
@@ -56,14 +57,14 @@ export const deviceAPI = {
 
 // 网络流量API
 export const flowAPI = {
-  getAll: (params = {}) => api.get('/network-flows', { params }),
-  getById: (id) => api.get(`/network-flows/${id}`),
-  getStats: (params = {}) => api.get('/network-flows/stats', { params }),
-  getHourlyStats: (params = {}) => api.get('/network-flows/hourly-stats', { params }),
-  getTopApplications: (params = {}) => api.get('/network-flows/top-applications', { params }),
-  getTopProtocols: (params = {}) => api.get('/network-flows/top-protocols', { params }),
-  getTopHosts: (params = {}) => api.get('/network-flows/top-hosts', { params }),
-  getRecentFlows: (params = {}) => api.get('/network-flows/recent', { params }),
+  getAll: (params = {}) => api.get('/flows', { params }),
+  getById: (id) => api.get(`/flows/${id}`),
+  getStats: (params = {}) => api.get('/flows/stats', { params }),
+  getHourlyStats: (params = {}) => api.get('/flows/stats/hourly', { params }),
+  getTopApplications: (params = {}) => api.get('/flows/applications', { params }),
+  getTopProtocols: (params = {}) => api.get('/flows/protocols', { params }),
+  getTopHosts: (params = {}) => api.get('/flows/hosts', { params }),
+  getRecentFlows: (params = {}) => api.get('/flows', { params }),
 };
 
 // 过滤器API
@@ -90,6 +91,7 @@ export const routerZoneAPI = {
 export const routerMappingAPI = {
   getAll: (params = {}) => api.get('/router-mapping', { params }),
   getStats: (params = {}) => api.get('/router-mapping/stats', { params }),
+  getConfig: () => api.get('/router-mapping/config'),
   add: (data) => api.post('/router-mapping/add', data),
   remove: (mapping) => api.delete('/router-mapping/remove', { data: mapping }),
   update: (data) => api.put('/router-mapping', data),

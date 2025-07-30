@@ -6,6 +6,7 @@ import Dashboard from '@/components/Dashboard';
 import Devices from '@/components/Devices';
 import RouterZones from '@/components/RouterZones';
 import RouterMapping from '@/components/RouterMapping';
+import AuthInitializer from '@/components/AuthInitializer';
 import './App.css';
 
 // Protected Route component
@@ -25,6 +26,7 @@ function PublicRoute({ children }) {
 function App() {
   return (
     <Router>
+      <AuthInitializer />
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={

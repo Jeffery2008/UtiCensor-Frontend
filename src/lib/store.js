@@ -29,6 +29,24 @@ export const useAuthStore = create(
         localStorage.setItem('user', JSON.stringify(updatedUser));
         set({ user: updatedUser });
       },
+
+      // 初始化认证状态
+      initializeAuth: () => {
+        const token = localStorage.getItem('auth_token');
+        const userStr = localStorage.getItem('user');
+        
+        if (token && userStr) {
+          try {
+            const user = JSON.parse(userStr);
+            set({ user, token, isAuthenticated: true });
+          } catch (error) {
+            console.error('Failed to parse user data:', error);
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            set({ user: null, token: null, isAuthenticated: false });
+          }
+        }
+      },
     }),
     {
       name: 'auth-storage',
@@ -39,6 +57,8 @@ export const useAuthStore = create(
       }),
       onRehydrateStorage: () => (state) => {
         state.setHasHydrated(true);
+        // 在hydration完成后初始化认证状态
+        state.initializeAuth();
       },
     }
   )
