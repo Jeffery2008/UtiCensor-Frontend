@@ -7,13 +7,17 @@ import './App.css';
 
 // Protected Route component
 function ProtectedRoute({ children }) {
-  const { isAuthenticated } = useAuthStore();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const hasHydrated = useAuthStore.persist?.hasHydrated?.();
+  if (!hasHydrated) return null;
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 }
 
 // Public Route component (redirect to dashboard if authenticated)
 function PublicRoute({ children }) {
-  const { isAuthenticated } = useAuthStore();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const hasHydrated = useAuthStore.persist?.hasHydrated?.();
+  if (!hasHydrated) return null;
   return !isAuthenticated ? children : <Navigate to="/" replace />;
 }
 

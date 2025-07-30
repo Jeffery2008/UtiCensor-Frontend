@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useAuthStore } from './store';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
@@ -16,7 +17,9 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('auth_token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = token.startsWith('Bearer ')
+        ? token
+        : `Bearer ${token}`;
     }
     return config;
   },
@@ -30,10 +33,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Clear token and redirect to login
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      // Clear auth state and redirect to login only if not already there
+      const { logout } = useAuthStore.getState();
+      logout();
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
