@@ -29,6 +29,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { deviceAPI, routerZoneAPI } from '@/lib/api';
 import { formatRelativeTime } from '@/lib/utils';
+import DeviceStats from './DeviceStats';
 
 export default function Devices() {
   const [devices, setDevices] = useState([]);
@@ -434,11 +435,16 @@ export default function Devices() {
         </CardHeader>
         <CardContent>
           <Tabs value={viewMode} onValueChange={setViewMode}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="stats">统计概览</TabsTrigger>
               <TabsTrigger value="all">全部设备</TabsTrigger>
               <TabsTrigger value="grouped">按区域分组</TabsTrigger>
               <TabsTrigger value="individual">单个设备</TabsTrigger>
             </TabsList>
+            
+            <TabsContent value="stats" className="space-y-4">
+              <DeviceStats />
+            </TabsContent>
             
             <TabsContent value="all" className="space-y-4">
               <div className="flex items-center justify-between">

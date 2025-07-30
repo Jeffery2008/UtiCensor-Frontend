@@ -6,6 +6,7 @@ import Dashboard from '@/components/Dashboard';
 import Devices from '@/components/Devices';
 import RouterZones from '@/components/RouterZones';
 import RouterMapping from '@/components/RouterMapping';
+import RouterOverview from '@/components/RouterOverview';
 import AuthInitializer from '@/components/AuthInitializer';
 import './App.css';
 
@@ -45,6 +46,7 @@ function App() {
           <Route path="flows" element={<div>Network Flows (Coming Soon)</div>} />
           <Route path="devices" element={<Devices />} />
           <Route path="router-zones" element={<RouterZones />} />
+          <Route path="router-overview" element={<RouterOverview />} />
           <Route path="router-mapping" element={<RouterMapping />} />
           <Route path="filters" element={<div>Filters (Coming Soon)</div>} />
           <Route path="analytics" element={<div>Analytics (Coming Soon)</div>} />
