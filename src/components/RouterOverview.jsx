@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Router, MapPin, Wifi, Server, Monitor, Smartphone } from 'lucide-react';
-import { routerMappingAPI } from '@/lib/api';
+import { routerZoneAPI, deviceAPI } from '@/lib/api';
 
 export default function RouterOverview() {
   const [routers, setRouters] = useState([]);
@@ -19,31 +19,30 @@ export default function RouterOverview() {
   const loadRouterData = async () => {
     setLoading(true);
     try {
-      // 获取路由器映射配置
-      const configResponse = await routerMappingAPI.getConfig();
-      const config = configResponse.data;
-      
       // 获取路由器区域数据
-      const zonesResponse = await routerMappingAPI.getZones();
+      const zonesResponse = await routerZoneAPI.getAll();
       const zones = zonesResponse.data.zones || [];
       
-      // 获取设备统计
-      const devicesResponse = await routerMappingAPI.getDeviceStats();
-      const deviceStats = devicesResponse.data.stats || {};
+      // 获取设备统计信息（包含按路由器区域分组的详细统计）
+      const deviceStatsResponse = await deviceAPI.getStats();
+      const deviceStats = deviceStatsResponse.data.stats || {};
+      const zoneDeviceStats = deviceStats.router_zones || [];
       
-      // 处理路由器数据
-      const routerData = zones.map(zone => ({
-        id: zone.id,
-        zoneName: zone.zone_name,
-        routerName: zone.router_name,
-        routerIdentifier: zone.router_identifier,
-        description: zone.description,
-        isActive: zone.is_active,
-        deviceCount: deviceStats.router_zones?.find(z => z.id === zone.id)?.device_count || 0,
-        activeDeviceCount: deviceStats.router_zones?.find(z => z.id === zone.id)?.active_device_count || 0,
-        createdAt: zone.created_at,
-        updatedAt: zone.updated_at
-      }));
+      // 合并数据
+      const routerData = zones.map(zone => {
+        const zoneStat = zoneDeviceStats.find(stat => stat.id === zone.id);
+        return {
+          id: zone.id,
+          zoneName: zone.zone_name,
+          routerName: zone.router_name || zone.zone_name,
+          routerIdentifier: zone.router_identifier,
+          description: zone.description,
+          isActive: zone.is_active === 1,
+          deviceCount: zoneStat ? parseInt(zoneStat.device_count) : 0,
+          activeDeviceCount: zoneStat ? parseInt(zoneStat.active_device_count) : 0,
+          createdAt: zone.created_at
+        };
+      });
       
       setRouters(routerData);
       
@@ -57,6 +56,14 @@ export default function RouterOverview() {
       
     } catch (error) {
       console.error('Failed to load router data:', error);
+      // 如果API调用失败，显示空数据而不是演示数据
+      setRouters([]);
+      setStats({
+        totalRouters: 0,
+        totalZones: 0,
+        activeRouters: 0,
+        totalDevices: 0
+      });
     } finally {
       setLoading(false);
     }
@@ -232,24 +239,41 @@ export default function RouterOverview() {
         </CardContent>
       </Card>
 
+      {/* 功能说明 */}
+      <Card className="border-green-200 bg-green-50">
+        <CardHeader>
+          <CardTitle className="text-green-800">✅ 路由器概览功能</CardTitle>
+          <CardDescription className="text-green-700">
+            现在显示的是实际的后端数据
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm text-green-700">
+            <p>• 显示当前系统中的路由器总数和区域分布</p>
+            <p>• 每个路由器区域显示设备数量和活跃状态</p>
+            <p>• 支持实时刷新和状态监控</p>
+            <p>• 与设备自动分配功能完全集成</p>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* 配置提示 */}
-      {routers.length === 0 && !loading && (
-        <Card className="border-blue-200 bg-blue-50">
-          <CardHeader>
-            <CardTitle className="text-blue-800">📋 配置路由器映射</CardTitle>
-            <CardDescription className="text-blue-700">
-              要显示路由器信息，需要先配置路由器映射
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2 text-sm text-blue-700">
-              <p>• 在"路由器映射"页面配置IP地址到路由器标识符的映射</p>
-              <p>• 确保路由器脚本正确发送标识符</p>
-              <p>• 系统会自动创建对应的路由器区域</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <Card className="border-blue-200 bg-blue-50">
+        <CardHeader>
+          <CardTitle className="text-blue-800">📋 配置路由器映射</CardTitle>
+          <CardDescription className="text-blue-700">
+            要显示真实的路由器信息，需要先配置路由器映射
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm text-blue-700">
+            <p>• 在"路由器映射"页面配置IP地址到路由器标识符的映射</p>
+            <p>• 确保路由器脚本正确发送标识符</p>
+            <p>• 系统会自动创建对应的路由器区域</p>
+            <p>• 新设备会自动分配到对应的路由器区域</p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 } 

@@ -11,7 +11,9 @@ import {
   LogOut,
   Shield,
   BarChart3,
-  Globe
+  Globe,
+  Router,
+  FileText
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -22,8 +24,10 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
   { name: 'Network Flows', href: '/flows', icon: Activity },
   { name: 'Devices', href: '/devices', icon: Monitor },
+  { name: 'Router Overview', href: '/router-overview', icon: Router },
   { name: 'Router Zones', href: '/router-zones', icon: Globe },
   { name: 'Router Mapping', href: '/router-mapping', icon: Settings },
+  { name: 'System Logs', href: '/logs', icon: FileText },
   { name: 'Filters', href: '/filters', icon: Filter },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Settings', href: '/settings', icon: Settings },

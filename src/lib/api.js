@@ -53,7 +53,6 @@ export const deviceAPI = {
   update: (id, data) => api.put(`/devices/${id}`, data),
   delete: (id) => api.delete(`/devices/${id}`),
   getStats: (params = {}) => api.get('/devices/stats', { params }),
-  getTypes: () => api.get('/devices/types'),
 };
 
 // 网络流量API
@@ -93,8 +92,6 @@ export const routerMappingAPI = {
   getAll: (params = {}) => api.get('/router-mapping', { params }),
   getStats: (params = {}) => api.get('/router-mapping/stats', { params }),
   getConfig: () => api.get('/router-mapping/config'),
-  getZones: () => api.get('/router-zones'),
-  getDeviceStats: () => api.get('/devices/stats'),
   add: (data) => api.post('/router-mapping/add', data),
   remove: (mapping) => api.delete('/router-mapping/remove', { data: mapping }),
   update: (data) => api.put('/router-mapping', data),
