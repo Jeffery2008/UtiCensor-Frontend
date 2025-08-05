@@ -1068,5 +1068,3 @@ export default Logs;
     </div>
   );
 };
-
-export default Logs; 
