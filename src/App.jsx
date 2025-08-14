@@ -8,6 +8,7 @@ import RouterZones from '@/components/RouterZones';
 import RouterMapping from '@/components/RouterMapping';
 import RouterOverview from '@/components/RouterOverview';
 import Logs from '@/pages/Logs.jsx';
+import NetworkFlows from '@/pages/NetworkFlows.jsx';
 import AuthInitializer from '@/components/AuthInitializer';
 import './App.css';
 
@@ -44,7 +45,7 @@ function App() {
           </ProtectedRoute>
         }>
           <Route index element={<Dashboard />} />
-          <Route path="flows" element={<div>Network Flows (Coming Soon)</div>} />
+          <Route path="flows" element={<NetworkFlows />} />
           <Route path="devices" element={<Devices />} />
           <Route path="router-zones" element={<RouterZones />} />
           <Route path="router-overview" element={<RouterOverview />} />
